@@ -160,7 +160,7 @@ lib/lib$(WREN).a: $(OPT_OBJECTS) $(VM_OBJECTS)
 lib/lib$(WREN).$(SHARED_EXT): $(OPT_OBJECTS) $(VM_OBJECTS)
 	@ printf "%10s %-30s %s\n" $(CC) $@ "$(C_OPTIONS) $(SHARED_LIB_FLAGS)"
 	@ mkdir -p lib
-	@ $(CC) $(CFLAGS) -shared $(SHARED_LIB_FLAGS) -o $@ $^
+	@ $(CC) $(CFLAGS) -shared $(SHARED_LIB_FLAGS) -luv -o $@ $^
 
 # Test executable.
 $(BUILD_DIR)/test/$(WREN): $(OPT_OBJECTS) $(MODULE_OBJECTS) $(TEST_OBJECTS) \
@@ -190,10 +190,10 @@ $(BUILD_DIR)/optional/%.o: src/optional/%.c $(VM_HEADERS) $(OPT_HEADERS)
 	@ $(CC) -c $(CFLAGS) -Isrc/include -Isrc/vm -o $@ $(FILE_FLAG) $<
 
 # VM object files.
-$(BUILD_DIR)/vm/%.o: src/vm/%.c $(VM_HEADERS)
+$(BUILD_DIR)/vm/%.o: src/vm/%.c $(VM_HEADERS) $(LIBUV)
 	@ printf "%10s %-30s %s\n" $(CC) $< "$(C_OPTIONS)"
 	@ mkdir -p $(BUILD_DIR)/vm
-	@ $(CC) -c $(CFLAGS) -Isrc/include -Isrc/optional -Isrc/vm -o $@ $(FILE_FLAG) $<
+	@ $(CC) -c $(CFLAGS) $(CLI_FLAGS) -Isrc/include -Isrc/optional -Isrc/vm -o $@ $(FILE_FLAG) $<
 
 # Test object files.
 $(BUILD_DIR)/test/%.o: test/api/%.c $(OPT_HEADERS) $(MODULE_HEADERS) \

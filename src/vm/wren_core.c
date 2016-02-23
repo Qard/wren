@@ -4,6 +4,8 @@
 #include <string.h>
 #include <time.h>
 
+#include <uv.h>
+
 #include "wren_common.h"
 #include "wren_core.h"
 #include "wren_primitive.h"
@@ -1034,6 +1036,11 @@ DEF_PRIMITIVE(system_clock)
   RETURN_NUM((double)clock() / CLOCKS_PER_SEC);
 }
 
+DEF_PRIMITIVE(system_hrclock)
+{
+  RETURN_NUM((double)uv_hrtime() / CLOCKS_PER_SEC / 1000);
+}
+
 DEF_PRIMITIVE(system_gc)
 {
   wrenCollectGarbage(vm);
@@ -1288,6 +1295,7 @@ void wrenInitializeCore(WrenVM* vm)
 
   ObjClass* systemClass = AS_CLASS(wrenFindVariable(vm, coreModule, "System"));
   PRIMITIVE(systemClass->obj.classObj, "clock", system_clock);
+  PRIMITIVE(systemClass->obj.classObj, "hrclock", system_hrclock);
   PRIMITIVE(systemClass->obj.classObj, "gc()", system_gc);
   PRIMITIVE(systemClass->obj.classObj, "writeString_(_)", system_writeString);
 
